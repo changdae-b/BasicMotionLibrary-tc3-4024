@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.6">
+  <DUT Name="E_AxisEvent" Id="{cb3117b5-97fd-48ce-a710-3b4cf25e461d}">
+    <Declaration><![CDATA[TYPE E_AxisEvent :(Enable := 1, Disable:=2, Halt:=3, Reset:=4, MoveAbsolute:=5, MoveModulo := 6, MoveRelative := 7, MoveVelocity := 8, Jog := 9)  UINT;
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

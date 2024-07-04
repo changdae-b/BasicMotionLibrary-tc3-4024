@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<TcSmProject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4024.53">
+	<DataTypes>
+		<DataType>
+			<Name GUID="{F318C34D-08D5-49B8-B93E-115385FF80A3}" PersistentType="true">AxisEvents</Name>
+			<DisplayName TxtId=""><![CDATA[NewEventClass_DisplayText]]></DisplayName>
+			<EventId>
+				<Name Id="1">Error</Name>
+				<DisplayName TxtId=""><![CDATA[Axis in Error state : This axis needs reset command]]></DisplayName>
+				<Severity>Verbose</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="2">Enable</Name>
+				<DisplayName TxtId=""><![CDATA[Axis Enable Command executed]]></DisplayName>
+				<Severity>Info</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="3">Disable</Name>
+				<DisplayName TxtId=""><![CDATA[Axis Disable Command executed]]></DisplayName>
+				<Severity>Info</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="4">Halt</Name>
+				<DisplayName TxtId=""><![CDATA[Halt Command executed]]></DisplayName>
+				<Severity>Verbose</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="5">MoveAbsolute</Name>
+				<DisplayName TxtId=""><![CDATA[MoveAbsolute Command excuted]]></DisplayName>
+				<Severity>Verbose</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="6">Reset</Name>
+				<DisplayName TxtId=""><![CDATA[Reset Command executed]]></DisplayName>
+				<Severity>Verbose</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="7">MoveModulo</Name>
+				<DisplayName TxtId=""><![CDATA[MoveModulo command executed]]></DisplayName>
+				<Severity>Verbose</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="8">MoveRelative</Name>
+				<DisplayName TxtId=""><![CDATA[MoveRelative command executed]]></DisplayName>
+				<Severity>Verbose</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="9">MoveVelocity</Name>
+				<DisplayName TxtId=""><![CDATA[MoveVelocity command executed]]></DisplayName>
+				<Severity>Verbose</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="10">Jog</Name>
+				<DisplayName TxtId=""><![CDATA[Jog command executed]]></DisplayName>
+				<Severity>Verbose</Severity>
+			</EventId>
+			<EventId>
+				<Name Id="11">Stop</Name>
+				<DisplayName TxtId=""><![CDATA[Stop Command executed]]></DisplayName>
+				<Severity>Verbose</Severity>
+			</EventId>
+			<Hides>
+				<Hide GUID="{80466E9C-E9C4-427F-A830-B82B7AE8DBB4}"/>
+				<Hide GUID="{97783F3D-FF95-4538-9598-83212851C4FB}"/>
+			</Hides>
+		</DataType>
+	</DataTypes>
+	<Project ProjectGUID="{7BC5EFD2-4FEB-492A-94A8-CAD67BBB1AA6}" TargetNetId="10.200.128.23.1.1" Target64Bit="true" ShowHideConfigurations="#x6">
+		<System>
+			<Settings MaxCpus="4" NonWinCpus="1">
+				<Cpu CpuId="3"/>
+			</Settings>
+			<Tasks>
+				<Task Id="3" Priority="20" CycleTime="100000" AmsPort="350" AdtTasks="true">
+					<Name>PlcTask</Name>
+				</Task>
+			</Tasks>
+		</System>
+		<Motion>
+			<NC File="NC.xti"/>
+		</Motion>
+		<Plc>
+			<Project File="Untitled1.xti"/>
+		</Plc>
+		<Io/>
+	</Project>
+	<Mappings>
+		<MappingInfo Identifier="{05000010-2001-0850-1000-040300205008}" Id="#x02030010" Watchdog="14000000040000000400000004000000"/>
+	</Mappings>
+</TcSmProject>

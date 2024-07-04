@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.6">
+  <DUT Name="ST_16BIT" Id="{85272ae7-9d34-4650-b9d8-26467894a577}">
+    <Declaration><![CDATA[TYPE ST_16BIT :
+STRUCT
+	bit1 : BIT;
+	bit2 : BIT;
+	bit3 : BIT;
+	bit4 : BIT;
+	bit5: BIT;
+	bit6 : BIT;
+	bit7 : BIT;
+	bit8 : BIT;
+	bit9 : BIT;
+	bit10 : BIT;
+	bit11 : BIT;
+	bit12 : BIT;
+	bit13 : BIT;
+	bit14 : BIT;
+	bit15 : BIT;
+	bit16 : BIT;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

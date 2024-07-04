@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.6">
+  <GVL Name="CONSTANTS" Id="{14d03ad2-6eaf-4708-87ff-2a8b6667a087}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+VAR_GLOBAL CONSTANT
+	BASIC_AXIS_ALARM_COUNT		 : UINT := 9; //E
+END_VAR
+]]></Declaration>
+  </GVL>
+</TcPlcObject>

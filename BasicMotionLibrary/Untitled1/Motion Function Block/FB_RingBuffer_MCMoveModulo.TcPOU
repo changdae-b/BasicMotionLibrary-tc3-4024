@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.6">
+  <POU Name="FB_RingBuffer_MCMoveModulo" Id="{a7b99509-3fc6-4300-bb98-bae53c0a71f7}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_RingBuffer_MCMoveModulo
+VAR_IN_OUT
+	Axis : AXIS_REF;
+END_VAR
+
+VAR_OUTPUT
+END_VAR
+
+VAR
+	MCMoveModulo : ARRAY[0..1] OF MC_MoveModulo;
+	_CurrentFB	 : UDINT;
+	i			 : UDINT;
+END_VAR
+
+(* This buffer ensures you always have a clean FB to use for a move *)]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[FOR i := 0 TO 1 DO
+	MCMoveModulo[i](Axis := Axis);
+END_FOR]]></ST>
+    </Implementation>
+    <Property Name="CurrentFB" Id="{a406e0c7-de11-4ccc-b844-9ca8bb3e3f6b}">
+      <Declaration><![CDATA[PROPERTY CurrentFB : POINTER TO MC_MoveModulo]]></Declaration>
+      <Get Name="Get" Id="{96262962-a98e-4d1c-9639-0f5025b9368e}">
+        <Declaration><![CDATA[VAR
+END_VAR]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[CurrentFB := ADR(MCMoveModulo[_CurrentFB]);]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="GetNewFB" Id="{970fea18-a837-45a4-832c-27344f420936}">
+      <Declaration><![CDATA[METHOD GetNewFB : POINTER TO MC_MoveModulo
+VAR_INPUT
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_CurrentFB := _CurrentFB + 1;
+IF _CurrentFB > 1 THEN
+	MCMoveModulo[1].Execute := FALSE;
+	_CurrentFB				:= 0;
+ELSE
+	MCMoveModulo[_CurrentFB - 1].Execute := FALSE;
+END_IF
+
+GetNewFB := ADR(MCMoveModulo[_CurrentFB]);]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

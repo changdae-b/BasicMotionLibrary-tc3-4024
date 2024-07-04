@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.6">
+  <POU Name="FB_RingBuffer_MCMoveVelocity" Id="{3896f4cc-e35e-46c3-8684-c48078255277}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_RingBuffer_MCMoveVelocity
+VAR_IN_OUT
+	Axis : AXIS_REF;
+END_VAR
+
+VAR_OUTPUT
+END_VAR
+
+VAR
+	MCMoveVelocity : ARRAY[0..1] OF MC_MoveVelocity;
+	_CurrentFB	   : UDINT;
+	i			   : UDINT;
+END_VAR
+
+(* This buffer ensures you always have a clean FB to use for a move *)]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[FOR i := 0 TO 1 DO
+	MCMoveVelocity[i](Axis := Axis);
+END_FOR]]></ST>
+    </Implementation>
+    <Property Name="CurrentFB" Id="{b15e8fad-7d4d-48d9-8222-c2ae0ebd7588}">
+      <Declaration><![CDATA[PROPERTY CurrentFB : POINTER TO MC_MoveVelocity]]></Declaration>
+      <Get Name="Get" Id="{f217cbeb-d696-4c37-8b59-fde428f176b0}">
+        <Declaration><![CDATA[VAR
+END_VAR]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[CurrentFB := ADR(MCMoveVelocity[_CurrentFB]);]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="GetNewFB" Id="{789bf8fd-720a-4f2c-85ce-df121aa80e4f}">
+      <Declaration><![CDATA[METHOD GetNewFB : POINTER TO MC_MoveVelocity
+VAR_INPUT
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_CurrentFB := _CurrentFB + 1;
+IF _CurrentFB > 1 THEN
+	MCMoveVelocity[1].Execute := FALSE;
+	_CurrentFB				  := 0;
+ELSE
+	MCMoveVelocity[_CurrentFB - 1].Execute := FALSE;
+END_IF
+
+GetNewFB := ADR(MCMoveVelocity[_CurrentFB]);]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="MAIN" Id="{0b6f0526-2eac-4518-a6e4-261d59dd75cb}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	axis1 : FB_Axis;
+	testStep: INT := 3;
+	
+	Pos : LREAL;
+	Velo : LREAL;
+	bButton: BOOL;
+	bErrorReset: BOOL;
+
+	Test1_AxisParameter : ST_AxisParameter := (Acceleration := 100, Deceleration := 100, Velocity := 50, Jerk :=500);
+	Test2_AxisParameter : ST_AxisParameter := (Acceleration := 1050, Deceleration := 500, Velocity := 150, Jerk :=300);
+	Test3_AxisParameter : ST_AxisParameter := (Acceleration := 105, Deceleration := 50, Velocity := 15, Jerk :=30);
+	rrTest : LREAL;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[axis1.UpdateAxisStatus(); //모터 지령 받기전에 상태 업데이트 필요 (코드 제일 상단에서 콜 해야함 ) 
+
+CASE testStep OF
+	1:
+		//Do Nothing
+	3:
+		axis1(stAxisParameter := Test1_AxisParameter); //속도 설정 Test1
+	4:
+		axis1(stAxisParameter := Test2_AxisParameter); //속도 설정 Test2
+	10:
+		axis1.Enable(); //서보 온
+		testStep := 1;
+	20:
+		axis1.Disable(); //서보 오프
+		testStep := 1;
+	30:
+		axis1.MoveAbsolute(1000,TRUE); //1000의 절대위치로 이동 , 다른 모션 명령 중지후 바로 실행
+		testStep := 1;
+	40:
+		axis1.MoveAbsolute(-1000, TRUE);// -1000의 절대위치로 이동 , 다른 모션 명령 중지후 바로 실행
+		testStep := 1;
+	50:
+		axis1.MoveAbsolute(2000, FALSE);// 2000의 절대위치로 이동, 다른 모션 명령 실행중일땐 명령 무시
+		testStep := 1;
+	55:
+		axis1.Jog(TRUE, FALSE, E_JOGMODE.MC_JOGMODE_STANDARD_SLOW, 0);
+	56:
+		axis1.MoveModulo(rrTest, MC_Direction.MC_Negative_Direction, FALSE);
+		teststep:=1;
+	57:
+		axis1.MoveModulo(rrTest, MC_Direction.MC_Positive_Direction, FALSE);
+		teststep:=1;
+	58:
+		axis1.MoveModulo(rrTest, MC_Direction.MC_Shortest_Way, FALSE);
+		teststep:=1;
+	60:
+		axis1.Halt(); // 모션 명령 정지
+		testStep := 1;
+	70:
+		axis1.Reset();
+		testStep := 1;
+		
+		
+	//CASE 1 : 500위치로 이동 후 -1000위치로 이동	
+	100:
+		axis1.MoveAbsolute(500, TRUE); //500 위치로 이동
+		testStep := 101;
+	101:
+		IF axis1.InPosition THEN //500 위치인지 체크
+			testStep := 110;
+		END_IF
+	110:
+		axis1.MoveAbsolute(-1000,TRUE); // -1000위치로 이동
+		testStep := 111;
+	111:
+		IF axis1.InPosition THEN // -1000위치인지 체크
+			testStep := 1;
+		END_IF
+		
+	//CASE 1 끝
+
+
+ 	//CASE 2 : 10000위치로 이동 중 bButton 신호를 받고 0위치로 이동
+	200:
+		axis1.MoveAbsolute(10000,TRUE);
+		IF bButton THEN
+			testStep := 210;
+			bButton := FALSE;
+		END_IF
+	210:
+		axis1.MoveAbsolute(0,TRUE);
+		IF axis1.InPosition THEN
+			testStep := 1;
+		END_IF
+	//CASE 2 끝
+END_CASE
+
+axis1.CyclicLogic(); //펑션 콜 하는 기능 주기적으로 계속 실행되야함]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,156 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.6">
+  <POU Name="FB_MoveVelocity_Test" Id="{cd4c5fe6-8648-48cd-994e-9bff64fc5c2a}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_MoveVelocity_Test EXTENDS TcUnit.FB_TestSuite
+
+VAR
+	fbTestAxis : FB_Axis;
+	stAxisParameter : ST_AxisParameter := (Acceleration := 1000, Deceleration := 1000, Jerk := 2000, Velocity := 1000);
+
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[MoveAbsolute1000();
+MoveVelocity100();
+MoveAbsolute1000_negDir();]]></ST>
+    </Implementation>
+    <Method Name="MoveAbsolute1000" Id="{55e692f1-156f-476c-960e-28415fb40f14}">
+      <Declaration><![CDATA[METHOD MoveAbsolute1000
+VAR_INST
+	step: INT;
+	
+	fbTon : TON := (PT:= T#10s);
+	EXPECTED_RESULT : INT := 20;
+END_VAR
+ ]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF TEST_ORDERED('MoveVelocity1000') THEN
+		
+	fbTestAxis.CyclicLogic();
+	CASE step OF
+		0:
+			fbTestAxis.stAxisParameter := stAxisParameter;
+			fbTestAxis.Enable();
+			IF fbTestAxis.Enabled THEN
+				step := 10;
+			END_IF
+		10:
+			IF fbTestAxis.MoveVelocity(1000,TRUE) = TRUE THEN
+				step := 11;
+			END_IF
+			
+		11:
+			IF fbTestAxis.Axis.NcToPlc.ActVelo >= 999 THEN
+				step := 20;
+			END_IF
+		
+		20: //Done
+		
+	
+	END_CASE
+	fbTestAxis.CyclicLogic();
+	
+	
+	fbTon(IN := TRUE);
+	IF fbTon.Q OR step = 20 THEN
+		AssertEquals(Expected := EXPECTED_RESULT, Actual := step, Message := 'MoveVelocity1000 didnt work');
+		TEST_FINISHED();
+	END_IF
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="MoveAbsolute1000_negDir" Id="{b37fe34a-ee19-43d8-91ca-5376c2e04e80}">
+      <Declaration><![CDATA[METHOD MoveAbsolute1000_negDir
+VAR_INST
+	step: INT;
+	
+	fbTon : TON := (PT:= T#10s);
+	EXPECTED_RESULT : INT := 20;
+END_VAR
+ ]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF TEST_ORDERED('MoveVelocity1000_negDir') THEN
+		
+	fbTestAxis.CyclicLogic();
+	CASE step OF
+		0:
+			fbTestAxis.stAxisParameter := stAxisParameter;
+			fbTestAxis.Enable();
+			IF fbTestAxis.Enabled THEN
+				step := 10;
+			END_IF
+		10:
+			IF fbTestAxis.MoveVelocity(-1000,TRUE) = TRUE THEN
+				step := 11;
+			END_IF
+			
+		11:
+			IF fbTestAxis.Axis.NcToPlc.ActVelo <= -999 THEN
+				step := 20;
+				fbTestAxis.Halt();
+			END_IF
+		
+		20: 
+			
+			//Done
+		
+	
+	END_CASE
+	fbTestAxis.CyclicLogic();
+	
+	
+	fbTon(IN := TRUE);
+	IF fbTon.Q OR step = 20 THEN
+		AssertEquals(Expected := EXPECTED_RESULT, Actual := step, Message := 'MoveVelocity100 didnt work');
+		TEST_FINISHED();
+	END_IF
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="MoveVelocity100" Id="{d03cd6d9-98ca-4ba1-8898-05471d08ce4c}">
+      <Declaration><![CDATA[METHOD MoveVelocity100
+VAR_INST
+	step: INT;
+	
+	fbTon : TON := (PT:= T#10s);
+	EXPECTED_RESULT : INT := 20;
+END_VAR
+ ]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF TEST_ORDERED('MoveVelocity100') THEN
+		
+	fbTestAxis.CyclicLogic();
+	CASE step OF
+		0:
+			fbTestAxis.stAxisParameter := stAxisParameter;
+			fbTestAxis.Enable();
+			IF fbTestAxis.Enabled THEN
+				step := 10;
+			END_IF
+		10:
+			IF fbTestAxis.MoveVelocity(100,FALSE) = TRUE THEN
+				step := 11;
+			END_IF
+			
+		11:
+			IF fbTestAxis.Axis.NcToPlc.ActVelo >= 99 THEN
+				step := 20;
+			END_IF
+		
+		20: //Done
+		
+	
+	END_CASE
+	fbTestAxis.CyclicLogic();
+	
+	
+	fbTon(IN := TRUE);
+	IF fbTon.Q OR step = 20 THEN
+		AssertEquals(Expected := EXPECTED_RESULT, Actual := step, Message := 'MoveVelocity100 didnt work');
+		TEST_FINISHED();
+	END_IF
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

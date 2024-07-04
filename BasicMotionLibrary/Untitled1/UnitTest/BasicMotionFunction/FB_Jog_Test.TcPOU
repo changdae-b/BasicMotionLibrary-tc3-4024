@@ -1,0 +1,153 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.6">
+  <POU Name="FB_Jog_Test" Id="{972750a2-28f5-4b97-bab2-40a25c7f4405}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Jog_Test EXTENDS TcUnit.FB_TestSuite
+
+VAR
+	fbTestAxis : FB_Axis;
+	stAxisParameter : ST_AxisParameter := (Acceleration := 1000, Deceleration := 1000, Jerk := 2000, Velocity := 1000);
+
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[JogBackword();
+JogForward();
+MoveBackAndForth();
+//JOG커멘드는 중간에 콜이 안되면 마지막에 지령준 방향으로 계쏙감]]></ST>
+    </Implementation>
+    <Method Name="JogBackword" Id="{96c71447-a91a-4b15-b1d2-c885ca092a30}">
+      <Declaration><![CDATA[METHOD JogBackword
+VAR_INST
+	step: INT;
+	
+	fbTon : TON := (PT:= T#10s);
+	EXPECTED_RESULT : INT := 20;
+END_VAR
+ ]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF TEST_ORDERED('JogBackword') THEN		
+	fbTestAxis.CyclicLogic();
+	CASE step OF
+		0:
+			fbTestAxis.stAxisParameter := stAxisParameter;
+			fbTestAxis.Enable();
+			IF fbTestAxis.Enabled THEN
+				step := 10;
+			END_IF
+		10:
+			fbTestAxis.Jog(FALSE, TRUE,E_JogMode.MC_JOGMODE_STANDARD_FAST,1000);
+			IF fbTestAxis.Axis.NcToPlc.ActPos <= -100 THEN
+				step := 20;
+				fbTestAxis.Jog(FALSE, FALSE,E_JogMode.MC_JOGMODE_STANDARD_FAST,0);
+			END_IF
+		
+		20: //Done
+		
+	
+	END_CASE
+	fbTestAxis.CyclicLogic();
+	
+	
+	fbTon(IN := TRUE);
+	IF fbTon.Q OR step = 20 THEN
+		AssertEquals(Expected := EXPECTED_RESULT, Actual := step, Message := 'JogBackward');
+		TEST_FINISHED();
+	END_IF
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="JogForward" Id="{9bf6d2ff-97d5-4a42-9539-38523278d7a7}">
+      <Declaration><![CDATA[METHOD JogForward
+VAR_INST
+	step: INT;
+	
+	fbTon : TON := (PT:= T#10s);
+	EXPECTED_RESULT : INT := 20;
+END_VAR
+ ]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF TEST_ORDERED('JogForward') THEN
+	fbTestAxis.CyclicLogic();
+	CASE step OF
+		0:
+			fbTestAxis.stAxisParameter := stAxisParameter;
+			fbTestAxis.Enable();
+			IF fbTestAxis.Enabled THEN
+				step := 10;
+			END_IF
+		10:
+			fbTestAxis.Jog(TRUE, FALSE,E_JogMode.MC_JOGMODE_STANDARD_FAST,0);
+			IF fbTestAxis.Axis.NcToPlc.ActPos >= 1000 THEN
+				step := 20;
+				fbTestAxis.Jog(FALSE, FALSE,E_JogMode.MC_JOGMODE_STANDARD_FAST,0);
+			END_IF
+			
+		
+		
+		20: //Done
+		
+	
+	END_CASE
+	fbTestAxis.CyclicLogic();
+	
+	
+	fbTon(IN := TRUE);
+	IF fbTon.Q OR step = 20 THEN
+		AssertEquals(Expected := EXPECTED_RESULT, Actual := step, Message := 'JogForward');
+		TEST_FINISHED();
+	END_IF
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="MoveBackAndForth" Id="{6ab2c732-8bb8-4254-87e7-6be20ed907ca}">
+      <Declaration><![CDATA[METHOD MoveBackAndForth
+VAR_INST
+	step: INT;
+	
+	fbTon : TON := (PT:= T#10s);
+	EXPECTED_RESULT : INT := 20;
+END_VAR
+ ]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF TEST_ORDERED('MoveBackAndForth') THEN
+		
+	fbTestAxis.CyclicLogic();
+	CASE step OF
+		0:
+			fbTestAxis.stAxisParameter := stAxisParameter;
+			fbTestAxis.Enable();
+			IF fbTestAxis.Enabled THEN
+				step := 10;
+			END_IF
+		10:
+			fbTestAxis.Jog(TRUE, FALSE,E_JogMode.MC_JOGMODE_STANDARD_FAST,0);
+			IF fbTestAxis.Axis.NcToPlc.ActPos >= 1000 THEN
+				step := 15;
+			END_IF
+		15:
+			fbTestAxis.Jog(FALSE, TRUE,E_JogMode.MC_JOGMODE_STANDARD_FAST,0);
+			IF fbTestAxis.Axis.NcToPlc.ActPos <= -100 THEN
+				step := 20;
+				fbTestAxis.Jog(FALSE, FALSE,E_JogMode.MC_JOGMODE_STANDARD_FAST,0);
+			END_IF
+		
+		20: //Done
+		
+	
+	END_CASE
+	fbTestAxis.CyclicLogic();
+	
+	
+	fbTon(IN := TRUE);
+	IF fbTon.Q OR step = 20 THEN
+		AssertEquals(Expected := EXPECTED_RESULT, Actual := step, Message := 'MoveBackAndForth');
+		TEST_FINISHED();
+	END_IF
+END_IF	
+	
+]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

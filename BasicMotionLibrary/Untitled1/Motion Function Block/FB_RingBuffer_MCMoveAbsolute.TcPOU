@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.6">
+  <POU Name="FB_RingBuffer_MCMoveAbsolute" Id="{2d7b4f4a-9af2-4a64-b169-ac08f6708294}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_RingBuffer_MCMoveAbsolute
+VAR_IN_OUT
+	Axis: AXIS_REF;
+END_VAR
+VAR
+	MCMoveAbsolute: ARRAY[0..1] OF MC_MoveAbsolute;
+	_CurrentFB: UDINT;
+	i: UDINT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[FOR i := 0 TO 1 DO
+	MCMoveAbsolute[i](Axis := Axis);
+END_FOR]]></ST>
+    </Implementation>
+    <Property Name="CurrentFB" Id="{fbdbcfcc-de63-414d-b415-f9658acf5052}">
+      <Declaration><![CDATA[PROPERTY CurrentFB : POINTER TO MC_MoveAbsolute
+]]></Declaration>
+      <Get Name="Get" Id="{1c5314cc-8dd9-4abc-9c8a-851bb770530c}">
+        <Declaration><![CDATA[]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[CurrentFB := ADR(MCMoveAbsolute[_CurrentFB]);]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="GetNewFB" Id="{fb0d48f1-ae8f-436b-846d-634a13bfd3d7}">
+      <Declaration><![CDATA[METHOD GetNewFB : POINTER TO MC_MoveAbsolute
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_CurrentFB := _CurrentFB + 1;
+IF _CurrentFB > 1 THEN
+	MCMoveAbsolute[1].Execute := FALSE;
+	_CurrentFB				  := 0;
+ELSE
+	MCMoveAbsolute[_CurrentFB - 1].Execute := FALSE;
+END_IF
+
+GetNewFB := ADR(MCMoveAbsolute[_CurrentFB]);]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

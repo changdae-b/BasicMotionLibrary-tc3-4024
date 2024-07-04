@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.6">
+  <POU Name="FB_MoveRelative_Test" Id="{d22271ec-6095-4e1f-a54e-6f3fb8d13e8a}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_MoveRelative_Test EXTENDS TcUnit.FB_TestSuite
+VAR
+	fbTestAxis : FB_Axis;
+	stAxisParameter : ST_AxisParameter := (Acceleration := 1000, Deceleration := 1000, Jerk := 2000, Velocity := 1000);
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[MoveRelative1000();
+MoveRelative200();
+MoveRelative1300_negDir();]]></ST>
+    </Implementation>
+    <Method Name="MoveRelative1000" Id="{029f0f30-87f5-4042-89e0-23c89ebc327d}">
+      <Declaration><![CDATA[METHOD MoveRelative1000
+VAR_INST
+	step : INT;
+	fbTon : TON;
+	EXPECTED_RESULT : INT := 20;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST_ORDERED('MoveRelative1000');
+
+fbTon(IN := TRUE, PT := T#10S);
+fbTestAxis.CyclicLogic();
+
+CASE step OF
+	0:
+		fbTestAxis(stAxisParameter := stAxisParameter);
+		fbTestAxis.Enable();
+		IF fbTestAxis.Enabled THEN
+			step := 10;
+		END_IF
+	10:
+		IF fbTestAxis.MoveRelative(1000, FALSE) THEN
+			step := 11;
+		END_IF
+	11:
+		IF NOT fbTestAxis.Busy AND fbTestAxis.InPosition THEN
+			step := 20;
+		END_IF
+	20:
+	
+END_CASE
+IF fbTon.Q OR step = 20 THEN
+	AssertEquals(EXPECTED_RESULT, step, 'relative1000');
+	TEST_FINISHED();
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="MoveRelative1300_negDir" Id="{7a801f1b-09b1-4a23-ad09-b58b2f5346ed}">
+      <Declaration><![CDATA[METHOD MoveRelative1300_negDir
+VAR_INST
+	step : INT;
+	fbTon : TON;
+	EXPECTED_RESULT : INT := 20;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST_ORDERED('MoveRelative1300_negDir');
+
+fbTon(IN := TRUE, PT := T#10S);
+fbTestAxis.CyclicLogic();
+
+CASE step OF
+	0:
+		fbTestAxis(stAxisParameter := stAxisParameter);
+		fbTestAxis.Enable();
+		IF fbTestAxis.Enabled THEN
+			step := 10;
+		END_IF
+	10:
+		IF fbTestAxis.MoveRelative(-1300, FALSE) THEN
+			step := 11;
+		END_IF
+	11:
+		IF NOT fbTestAxis.Busy AND fbTestAxis.InPosition THEN
+			step := 20;
+		END_IF
+	20:
+	
+END_CASE
+IF fbTon.Q OR step = 20 THEN
+	AssertEquals(EXPECTED_RESULT, step, 'MoveRelative1300_negDir');
+	TEST_FINISHED();
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="MoveRelative200" Id="{c32086c2-dc12-4ae1-a649-1a240de40788}">
+      <Declaration><![CDATA[METHOD MoveRelative200
+VAR_INST
+	step : INT;
+	fbTon : TON;
+	EXPECTED_RESULT : INT := 20;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST_ORDERED('MoveRelative200');
+
+fbTon(IN := TRUE, PT := T#10S);
+fbTestAxis.CyclicLogic();
+
+CASE step OF
+	0:
+		fbTestAxis(stAxisParameter := stAxisParameter);
+		fbTestAxis.Enable();
+		IF fbTestAxis.Enabled THEN
+			step := 10;
+		END_IF
+	10:
+		IF fbTestAxis.MoveRelative(200, FALSE) THEN
+			step := 11;
+		END_IF
+	11:
+		IF NOT fbTestAxis.Busy AND fbTestAxis.InPosition THEN
+			step := 20;
+		END_IF
+	20:
+	
+END_CASE
+IF fbTon.Q OR step = 20 THEN
+	AssertEquals(EXPECTED_RESULT, step, 'relative1000');
+	TEST_FINISHED();
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>
